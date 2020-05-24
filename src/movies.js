@@ -12,23 +12,72 @@ const howManyMovies = (moviesArr) => {
 };
 // Iteration 3: All rates average - Get the average of all rates with 2 decimals
 function ratesAverage(moviesArr) {
-    const avgRate = moviesArr.filter(movie => movie.rate).reduce((acc, val) => acc + val.rate, 0) / moviesArr.length;
-    return Number(avgRate.toFixed(2)) || 0;
+  const avgRate =
+    moviesArr
+      .filter((movie) => movie.rate)
+      .reduce((acc, val) => acc + val.rate, 0) / moviesArr.length;
+  return Number(avgRate.toFixed(2)) || 0;
 }
 
 // Iteration 4: Drama movies - Get the average of Drama Movies
 function dramaMoviesRate(moviesArr) {
-    let dramas = moviesArr.filter(movie => movie.genre.includes("Drama"));
-    return ratesAverage(dramas);
+  let dramas = moviesArr.filter((movie) => movie.genre.includes("Drama"));
+  return ratesAverage(dramas);
 }
 
 // Iteration 5: Ordering by year - Order by year, ascending (in growing order)
 function orderByYear(moviesArr) {
-    return [...moviesArr].sort((a, b) => a.year > b.year ? 1 : -1);
+  return [...moviesArr].sort((a, b) => (a.year > b.year ? 1 : -1));
 }
 
 // Iteration 6: Alphabetic Order - Order by title and print the first 20 titles
+function orderAlphabetically(moviesArr) {
+  return [...moviesArr]
+    .map((movie) => movie.title)
+    .sort((a, b) => (a > b ? 1 : -1))
+    .slice(0, 20);
+}
 
 // BONUS - Iteration 7: Time Format - Turn duration of the movies from hours to minutes
+function turnHoursToMinutes(moviesArr) {
+  return JSON.parse(JSON.stringify(moviesArr)).map((movie) => {
+    let movieDuration = movie.duration.split(" ");
+    if (movieDuration.length === 2) {
+      movie.duration =
+        parseFloat(movieDuration[0]) * 60 + parseFloat(movieDuration[1]);
+    } else {
+      if (movieDuration[0].includes("h")) {
+        movie.duration = parseFloat(movieDuration[0]) * 60;
+      } else {
+        movie.duration = parseFloat(movieDuration[0]);
+      }
+    }
+    return movie;
+  });
+}
 
 // BONUS - Iteration 8: Best yearly rate average - Best yearly rate average
+function bestYearAvg(moviesArr) {
+  if (!moviesArr.length) {
+    return null;
+  }
+
+  let sortedByYear = {};
+  moviesArr.forEach((movie) => {
+    if (sortedByYear[movie.year]) {
+      sortedByYear[movie.year].push(movie);
+    } else {
+      sortedByYear[movie.year] = [movie];
+    }
+  });
+
+  let highestAvgRate = 0;
+  let bestYear;
+  for (let year in sortedByYear) {
+    if (ratesAverage(sortedByYear[year]) > highestAvgRate) {
+      highestAvgRate = ratesAverage(sortedByYear[year]);
+      bestYear = year;
+    }
+  }
+  return `The best year was ${bestYear} with an average rate of ${highestAvgRate}`;
+}
